@@ -79,10 +79,9 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", titleTask='" + titleTask + '\'' +
-                ", descTask='" + descTask + '\'' +
-                '}';
+        /**
+         * "Id da Tarefa: " + id +
+         */
+        return "Nome da Tarefa: " + titleTask + "\nDescrição da Tarefa: " + descTask + "\n";
     }
 }
