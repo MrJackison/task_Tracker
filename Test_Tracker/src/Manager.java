@@ -1,8 +1,18 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Manager {
-    ArrayList<Task> taskList = new ArrayList<>();
+    ArrayList<Task> taskList = carregarTaskJSON();
+
+    private static final String arquivo_json = "tarefas.json";
 
     public void menu() {
         Scanner input = new Scanner(System.in);
@@ -18,15 +28,16 @@ public class Manager {
 
                 switch (choice) {
 
-                    case 1:
+                    case 1: //Adicionar Nova Tarefa
                         System.out.println("--- ADICIONAR NOVA TAREFA ---\n");
-                        Task newTask = new Task();
+                        Task newTask = new Task(); //Cria nova instância da task
 
-                        newTask.gerarId();
-                        newTask.nomearDescreverTask();
+                        newTask.gerarId(); //Gera o Id desta task
+                        newTask.nomearDescreverTask(); //Nomeia e descreve a task
 
-                        taskList.add(newTask);
+                        taskList.add(newTask); //Adiciona a task na lista de tarefas
                         System.out.println("Nova Tarefa Adicionada Com Sucesso!");
+                        salvarTaskJSON(taskList);
 
                         System.out.println();
                         break;
@@ -43,11 +54,19 @@ public class Manager {
                         System.out.println();
                         break;
 
-                    case 4:
+                    case 4:  //Listar Tarefas Existentes
                         int voltarAoMenu;
 
-                        System.out.println("--- TAREFAS EXISTENTES ---\n");
-                        listarTask();
+                        System.out.println("=== TAREFAS EXISTENTES ===\n");
+
+                        List<Task> taskCarregas = carregarTaskJSON();
+                        if (taskCarregas != null) {
+                            int contador = 1;
+                            for (Task listarTask : taskCarregas) {
+                                System.out.println("--- Tarefa " + contador + " ---\n\n" + listarTask.toString());
+                                contador++;
+                            }
+                        }
 
                         while (true) {
                             try {
@@ -67,10 +86,12 @@ public class Manager {
                         }
                         System.out.println();
                         break;
+
                     case 0:
                         System.out.println("Saindo do Programa");
                         running = false;
                         break;
+
                     default:
                         System.out.println("Comando Inválido!\n" + fraseMenu);
                         input.nextInt();
@@ -83,16 +104,39 @@ public class Manager {
         }
     }
 
-    public void listarTask() {
-        int contador = 1;
+//    public void listarTask() {
+//        int contador = 1;
+//
+//        if (taskList.isEmpty()) {
+//            System.out.println("Nenhuma Tarefa Aqui!\n");
+//        } else {
+//            for (Task task : taskList) {
+//                System.out.println("--- Tarefa " + contador + " ---\n\n" + task.toString());
+//                contador++;
+//            }
+//        }
+//
+//    }
 
-        if (taskList.isEmpty()) {
-            System.out.println("Nenhuma Tarefa Aqui!");
-        } else {
-            for (Task task : taskList) {
-                System.out.println("--- Tarefa " + contador + " ---\n" + task.toString());
-                contador++;
-            }
+    public void salvarTaskJSON(ArrayList<Task> taskList) {
+        Gson gson = new Gson();
+        try (FileWriter writer = new FileWriter(arquivo_json)) {
+            gson.toJson(taskList, writer);
+        } catch (IOException c) {
+            System.out.println("Algo de errado aconteceu ao salvarTaskJSON");
         }
     }
+
+    public ArrayList<Task> carregarTaskJSON() {
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(arquivo_json)) {
+            Type taskListType = new TypeToken<ArrayList<Task>>() {
+            }.getType();
+            return gson.fromJson(reader, taskListType);
+        } catch (IOException d) {
+            System.out.println("Algo de errado aconteceu ao carregarTaskJSON");
+        }
+        return null;
+    }
+
 }
