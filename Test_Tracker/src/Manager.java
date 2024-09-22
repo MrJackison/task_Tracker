@@ -127,12 +127,23 @@ public class Manager {
         }
     }
 
+    /**
+     * Transforma os dados do arquivo JSON em objetos Task
+     * @return A leitura
+     */
+
     public ArrayList<Task> carregarTaskJSON() {
-        Gson gson = new Gson();
+        Gson gson = new Gson(); //Instância da biblioteca Gson que lida com serialização e deserialização (Leitura e escrita de/para JSON)
+
         try (FileReader reader = new FileReader(arquivo_json)) {
             Type taskListType = new TypeToken<ArrayList<Task>>() {
             }.getType();
             return gson.fromJson(reader, taskListType);
+            /**
+             * .fromJson : Método que converte representações JSON em objetos Java;
+             * Argumento1 : Objeto FileReader que contém os dados serializados do arquivo JSON;
+             * Argumento2 : Tipo de dado que o reader será convertido, neste caso ArrayList<Task>
+             */
         } catch (IOException d) {
             System.out.println("Algo de errado aconteceu ao carregarTaskJSON");
         }
